@@ -20,11 +20,14 @@ import {
 
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 const Header = () => {
+  const { language, setLanguage, t } = useLanguage()
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
+  const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -36,14 +39,15 @@ const Header = () => {
   }, [])
 
   const navigation = [
-    { name: 'Home', href: '/', icon: Globe },
-    { name: 'About', href: '/about', icon: User },
-    { name: 'Services', href: '/services', icon: Award },
-    { name: 'Certifications', href: '/certifications', icon: Settings },
-    { name: 'Events', href: '/events', icon: Calendar },
-    { name: 'Gallery', href: '/gallery', icon: Camera },
-    { name: 'Blog', href: '/blog', icon: FileText },
-    { name: 'Contact', href: '/contact', icon: Mail },
+    { name: t('nav.home'), href: '/', icon: Globe },
+    { name: t('nav.about'), href: '/about', icon: User },
+    { name: t('nav.services'), href: '/services', icon: Award },
+    { name: t('nav.certifications'), href: '/certifications', icon: Settings },
+    { name: t('nav.events'), href: '/events', icon: Calendar },
+    { name: t('nav.gallery'), href: '/gallery', icon: Camera },
+    { name: t('nav.blog'), href: '/blog', icon: FileText },
+    { name: t('nav.contact'), href: '/contact', icon: Mail },
+    { name: t('nav.admin'), href: '/admin', icon: Users },
   ]
 
   return (
@@ -73,11 +77,11 @@ const Header = () => {
 
             <div className="hidden md:block">
               <h1 className="text-xl font-serif font-bold text-white">
-                PIBA International
+                {t('header.title')}
               </h1>
 
               <p className="text-xs text-white/80">
-                Professionals in Beauty & Boutique
+                {t('header.subtitle')}
               </p>
             </div>
           </Link>
@@ -99,13 +103,52 @@ const Header = () => {
           {/* Right Actions */}
           <div className="hidden md:flex items-center space-x-4">
 
-            <Button
-              variant="outline"
-              className="border-accent-gold text-white hover:bg-accent-gold hover:text-primary-bg"
-            >
-              <Globe className="w-4 h-4 mr-2" />
-              EN
-            </Button>
+            {/* Language Selector */}
+            <div className="relative">
+              <Button
+                variant="outline"
+                className="border-accent-gold text-white hover:bg-accent-gold hover:text-primary-bg"
+                onClick={() => setIsLanguageMenuOpen(!isLanguageMenuOpen)}
+              >
+                <Globe className="w-4 h-4 mr-2" />
+                {language === 'en' ? 'EN' : language === 'pa' ? 'ਪੰ' : 'हि'}
+              </Button>
+
+              {isLanguageMenuOpen && (
+                <div className="absolute right-0 mt-2 w-40 bg-yellow-500 rounded-xl shadow-xl border border-black/20 overflow-hidden">
+                  <button
+                    onClick={() => {
+                      setLanguage('en')
+                      setIsLanguageMenuOpen(false)
+                    }}
+                    className="w-full flex items-center px-4 py-3 text-black hover:bg-black hover:text-yellow-500 transition-colors duration-200"
+                  >
+                    <Globe className="w-4 h-4 mr-2" />
+                    English
+                  </button>
+                  <button
+                    onClick={() => {
+                      setLanguage('pa')
+                      setIsLanguageMenuOpen(false)
+                    }}
+                    className="w-full flex items-center px-4 py-3 text-black hover:bg-black hover:text-yellow-500 transition-colors duration-200"
+                  >
+                    <Globe className="w-4 h-4 mr-2" />
+                    ਪੰਜਾਬੀ
+                  </button>
+                  <button
+                    onClick={() => {
+                      setLanguage('hi')
+                      setIsLanguageMenuOpen(false)
+                    }}
+                    className="w-full flex items-center px-4 py-3 text-black hover:bg-black hover:text-yellow-500 transition-colors duration-200"
+                  >
+                    <Globe className="w-4 h-4 mr-2" />
+                    हिंदी
+                  </button>
+                </div>
+              )}
+            </div>
 
             {/* Profile Menu */}
             <div className="relative">

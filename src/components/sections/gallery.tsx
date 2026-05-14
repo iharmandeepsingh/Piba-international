@@ -2,29 +2,27 @@
 
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import { 
-  Filter, 
-  Search, 
-  Grid3X3, 
-  List, 
-  Heart, 
-  Eye, 
-  Download, 
-  Share2, 
+import {
+  Filter,
+  Grid3X3,
+  Heart,
+  Eye,
+  Download,
+  Share2,
   Play,
   Image as ImageIcon,
   Video as VideoIcon,
   Maximize2,
   X
 } from 'lucide-react'
+
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 
 const Gallery = () => {
   const [activeCategory, setActiveCategory] = useState('all')
   const [searchTerm, setSearchTerm] = useState('')
-  const [selectedItem, setSelectedItem] = useState(null)
+  const [selectedItem, setSelectedItem] = useState<any>(null)
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
 
   const categories = [
@@ -49,7 +47,8 @@ const Gallery = () => {
       artist: 'Sarah Johnson',
       likes: 342,
       views: 1250,
-      description: 'Stunning bridal makeup transformation using premium gold and rose tones.'
+      description:
+        'Stunning bridal makeup transformation using premium gold and rose tones.'
     },
     {
       id: 2,
@@ -61,7 +60,8 @@ const Gallery = () => {
       artist: 'Michael Chen',
       likes: 289,
       views: 987,
-      description: 'Bold and artistic makeup design featuring vibrant colors and creative techniques.'
+      description:
+        'Bold and artistic makeup design featuring vibrant colors and creative techniques.'
     },
     {
       id: 3,
@@ -73,7 +73,8 @@ const Gallery = () => {
       artist: 'Emma Wilson',
       likes: 456,
       views: 1567,
-      description: 'Cutting-edge hairstyles that push boundaries of conventional beauty standards.'
+      description:
+        'Cutting-edge hairstyles that push boundaries of conventional beauty standards.'
     },
     {
       id: 4,
@@ -85,7 +86,8 @@ const Gallery = () => {
       artist: 'Lisa Anderson',
       likes: 523,
       views: 890,
-      description: 'Intricate floral nail art design with hand-painted details and 3D elements.'
+      description:
+        'Intricate floral nail art design with hand-painted details and 3D elements.'
     },
     {
       id: 5,
@@ -97,7 +99,8 @@ const Gallery = () => {
       artist: 'David Brown',
       likes: 267,
       views: 743,
-      description: 'High-end facial treatment showcasing premium skincare products and techniques.'
+      description:
+        'High-end facial treatment showcasing premium skincare products and techniques.'
     },
     {
       id: 6,
@@ -109,7 +112,8 @@ const Gallery = () => {
       artist: 'Sophia Martinez',
       likes: 445,
       views: 1123,
-      description: 'Soft and romantic bridal makeup with delicate gold accents.'
+      description:
+        'Soft and romantic bridal makeup with delicate gold accents.'
     },
     {
       id: 7,
@@ -122,7 +126,8 @@ const Gallery = () => {
       artist: 'PIBA International',
       likes: 892,
       views: 3456,
-      description: 'Annual awards ceremony recognizing excellence in beauty industry professionals.'
+      description:
+        'Annual awards ceremony recognizing excellence in beauty industry professionals.'
     },
     {
       id: 8,
@@ -135,17 +140,20 @@ const Gallery = () => {
       artist: 'Various Artists',
       likes: 667,
       views: 2234,
-      description: 'Highlights from international nail art competition showcasing incredible talent and creativity.'
+      description:
+        'Highlights from international nail art competition showcasing incredible talent and creativity.'
     }
   ]
 
-  const filteredItems = galleryItems.filter(item => {
-    const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         item.artist.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         item.description.toLowerCase().includes(searchTerm.toLowerCase())
-    
-    const matchesCategory = activeCategory === 'all' || item.category === activeCategory
-    
+  const filteredItems = galleryItems.filter((item) => {
+    const matchesSearch =
+      item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.artist.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.description.toLowerCase().includes(searchTerm.toLowerCase())
+
+    const matchesCategory =
+      activeCategory === 'all' || item.category === activeCategory
+
     return matchesSearch && matchesCategory
   })
 
@@ -166,53 +174,60 @@ const Gallery = () => {
       onClick={() => handleItemClick(item)}
     >
       <div className="overflow-hidden rounded-lg shadow-lg hover:shadow-2xl transition-all duration-300">
-        {/* Image/Video Thumbnail */}
         <div className="relative aspect-square overflow-hidden">
           {item.type === 'video' ? (
             <div className="relative">
-              <video 
-                src={item.thumbnail} 
+              <video
+                src={item.thumbnail}
                 className="w-full h-full object-cover"
                 muted
               />
+
               <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
                 <Play className="w-12 h-12 text-white" />
               </div>
+
               <div className="absolute bottom-4 right-4 bg-black/70 text-white px-2 py-1 rounded text-xs">
                 {item.duration}
               </div>
             </div>
           ) : (
-            <img 
-              src={item.thumbnail} 
+            <img
+              src={item.thumbnail}
               alt={item.title}
               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
             />
           )}
         </div>
+      </div>
 
-        {/* Overlay Info */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-between p-4">
-          <div className="text-white">
-            <h3 className="text-lg font-semibold mb-2">{item.title}</h3>
-            <p className="text-sm opacity-90 mb-3 line-clamp-2">{item.description}</p>
-            <div className="flex items-center space-x-4 text-xs">
-              <div className="flex items-center">
-                <ImageIcon className="w-4 h-4 mr-1" />
-                <span>{item.artist}</span>
-              </div>
-              <div className="flex items-center space-x-4">
-                <Heart className="w-4 h-4 mr-1" />
-                <span>{item.likes}</span>
-              </div>
-              <div className="flex items-center space-x-4">
-                <Eye className="w-4 h-4 mr-1" />
-                <span>{item.views}</span>
-              </div>
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-between p-4">
+        <div className="text-white">
+          <h3 className="text-lg font-semibold mb-2">{item.title}</h3>
+
+          <p className="text-sm opacity-90 mb-3 line-clamp-2">
+            {item.description}
+          </p>
+
+          <div className="flex items-center space-x-4 text-xs">
+            <div className="flex items-center">
+              <ImageIcon className="w-4 h-4 mr-1" />
+              <span>{item.artist}</span>
+            </div>
+
+            <div className="flex items-center">
+              <Heart className="w-4 h-4 mr-1" />
+              <span>{item.likes}</span>
+            </div>
+
+            <div className="flex items-center">
+              <Eye className="w-4 h-4 mr-1" />
+              <span>{item.views}</span>
             </div>
           </div>
         </div>
-      </motion.div>
+      </div>
     </motion.div>
   )
 
@@ -220,7 +235,10 @@ const Gallery = () => {
     if (!selectedItem) return null
 
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4" onClick={handleCloseModal}>
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
+        onClick={handleCloseModal}
+      >
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -241,15 +259,15 @@ const Gallery = () => {
             {/* Media */}
             <div className="lg:w-3/5 bg-black flex items-center justify-center">
               {selectedItem.type === 'video' ? (
-                <video 
-                  src={selectedItem.fullVideo} 
+                <video
+                  src={selectedItem.fullVideo}
                   controls
                   autoPlay
                   className="w-full h-full object-contain"
                 />
               ) : (
-                <img 
-                  src={selectedItem.fullImage} 
+                <img
+                  src={selectedItem.fullImage}
                   alt={selectedItem.title}
                   className="w-full h-full object-contain"
                 />
@@ -259,62 +277,92 @@ const Gallery = () => {
             {/* Details */}
             <div className="lg:w-2/5 p-6 flex flex-col justify-between">
               <div>
-                <h2 className="text-2xl font-bold text-white mb-4">{selectedItem.title}</h2>
-                
+                <h2 className="text-2xl font-bold text-black mb-4">
+                  {selectedItem.title}
+                </h2>
+
                 <div className="space-y-4 mb-6">
                   <div className="flex items-center space-x-3">
                     <ImageIcon className="w-5 h-5 text-piba-gold" />
                     <span className="font-semibold">Artist:</span>
                   </div>
-                  <p className="text-gray-700">{selectedItem.artist}</p>
-                  
+
+                  <p className="text-gray-700">
+                    {selectedItem.artist}
+                  </p>
+
                   <div className="flex items-center space-x-3">
                     <div className="flex items-center">
                       <Heart className="w-5 h-5 text-red-500 mr-2" />
-                      <span className="font-semibold">{selectedItem.likes}</span>
+                      <span className="font-semibold">
+                        {selectedItem.likes}
+                      </span>
                     </div>
+
                     <span className="text-gray-600">Likes</span>
                   </div>
-                  
+
                   <div className="flex items-center space-x-3">
                     <div className="flex items-center">
                       <Eye className="w-5 h-5 text-piba-gold mr-2" />
-                      <span className="font-semibold">{selectedItem.views}</span>
+                      <span className="font-semibold">
+                        {selectedItem.views}
+                      </span>
                     </div>
+
                     <span className="text-gray-600">Views</span>
                   </div>
                 </div>
 
                 {selectedItem.duration && (
-                  <div className="flex items-center space-x-3">
+                  <div className="flex items-center space-x-3 mb-6">
                     <VideoIcon className="w-5 h-5 text-piba-gold mr-2" />
-                    <span className="font-semibold">{selectedItem.duration}</span>
+
+                    <span className="font-semibold">
+                      {selectedItem.duration}
+                    </span>
+
                     <span className="text-gray-600">Duration</span>
                   </div>
                 )}
-              </div>
 
                 {/* Description */}
-                <div>
-                  <h3 className="font-semibold text-white mb-2">Description</h3>
-                  <p className="text-gray-700 leading-relaxed">{selectedItem.description}</p>
-                </div>
+                <div className="mt-6">
+                  <h3 className="font-semibold text-black mb-2">
+                    Description
+                  </h3>
 
-                {/* Action Buttons */}
-                <div className="flex space-x-3 mt-6">
-                  <Button variant="outline" className="flex items-center space-x-2">
-                    <Heart className="w-4 h-4" />
-                    Like
-                  </Button>
-                  <Button variant="outline" className="flex items-center space-x-2">
-                    <Share2 className="w-4 h-4" />
-                    Share
-                  </Button>
-                  <Button variant="luxury" className="flex items-center space-x-2">
-                    <Download className="w-4 h-4" />
-                    Download
-                  </Button>
+                  <p className="text-gray-700 leading-relaxed">
+                    {selectedItem.description}
+                  </p>
                 </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex space-x-3 mt-6">
+                <Button
+                  variant="outline"
+                  className="flex items-center space-x-2"
+                >
+                  <Heart className="w-4 h-4" />
+                  <span>Like</span>
+                </Button>
+
+                <Button
+                  variant="outline"
+                  className="flex items-center space-x-2"
+                >
+                  <Share2 className="w-4 h-4" />
+                  <span>Share</span>
+                </Button>
+
+                <Button
+                  variant="luxury"
+                  className="flex items-center space-x-2"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>Download</span>
+                </Button>
               </div>
             </div>
           </div>
@@ -329,7 +377,10 @@ const Gallery = () => {
       <div className="luxury-card-enhanced shadow-lg border-b border-accent-gold/20">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-white">Gallery</h1>
+            <h1 className="text-2xl font-bold text-black">
+              Gallery
+            </h1>
+
             <div className="flex items-center space-x-4">
               <Button variant="outline">
                 <Filter className="w-4 h-4 mr-2" />
@@ -343,12 +394,12 @@ const Gallery = () => {
       {/* Category Tabs */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto">
-          <div className="flex space-x-8">
-            {categories.map(category => (
+          <div className="flex space-x-8 overflow-x-auto">
+            {categories.map((category) => (
               <button
                 key={category.id}
                 onClick={() => setActiveCategory(category.id)}
-                className={`flex items-center px-6 py-4 font-medium transition-colors duration-200 border-b-2 ${
+                className={`flex items-center px-6 py-4 font-medium transition-colors duration-200 border-b-2 whitespace-nowrap ${
                   activeCategory === category.id
                     ? 'text-piba-gold border-piba-gold'
                     : 'text-gray-600 border-transparent hover:text-piba-gold hover:border-piba-gold'
@@ -362,11 +413,11 @@ const Gallery = () => {
         </div>
       </div>
 
-      {/* Search Bar */}
+      {/* Search */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center space-x-4">
-            <div className="flex-1">
+          <div className="flex flex-col md:flex-row gap-4 items-center">
+            <div className="flex-1 w-full">
               <Input
                 placeholder="Search gallery..."
                 value={searchTerm}
@@ -374,15 +425,19 @@ const Gallery = () => {
                 className="w-full"
               />
             </div>
+
             <div className="flex items-center space-x-4">
               <select
                 value={viewMode}
-                onChange={(e) => setViewMode(e.target.value as 'grid' | 'list')}
+                onChange={(e) =>
+                  setViewMode(e.target.value as 'grid' | 'list')
+                }
                 className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-piba-gold focus:border-piba-gold"
               >
                 <option value="grid">Grid View</option>
                 <option value="list">List View</option>
               </select>
+
               <Button variant="outline">
                 <Maximize2 className="w-4 h-4 mr-2" />
                 Expand
@@ -392,7 +447,7 @@ const Gallery = () => {
         </div>
       </div>
 
-      {/* Gallery Grid/List */}
+      {/* Gallery */}
       <div className="max-w-7xl mx-auto p-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -410,54 +465,68 @@ const Gallery = () => {
           ) : (
             <div className="space-y-6">
               {filteredItems.map((item) => (
-                <div key={item.id} className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+                <div
+                  key={item.id}
+                  className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
+                >
                   <div className="flex flex-col md:flex-row gap-4">
                     <div className="md:w-1/3">
                       {renderGalleryItem(item)}
                     </div>
+
                     <div className="md:w-2/3 p-4 flex flex-col justify-between">
                       <div>
-                        <h3 className="text-lg font-semibold text-white mb-2">{item.title}</h3>
-                        <p className="text-sm text-gray-600 mb-3 line-clamp-2">{item.description}</p>
+                        <h3 className="text-lg font-semibold text-black mb-2">
+                          {item.title}
+                        </h3>
+
+                        <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                          {item.description}
+                        </p>
                       </div>
-                      <div className="flex items-center space-x-4 text-sm">
+
+                      <div className="flex items-center flex-wrap gap-4 text-sm">
                         <div className="flex items-center">
                           <ImageIcon className="w-4 h-4 text-piba-gold mr-1" />
                           <span>{item.artist}</span>
                         </div>
-                        <div className="flex items-center space-x-4">
-                          <div className="flex items-center">
-                            <Heart className="w-4 h-4 text-red-500 mr-1" />
-                            <span>{item.likes}</span>
-                          </div>
-                          <span className="text-gray-600">Likes</span>
+
+                        <div className="flex items-center">
+                          <Heart className="w-4 h-4 text-red-500 mr-1" />
+                          <span>{item.likes}</span>
                         </div>
-                        <div className="flex items-center space-x-4">
-                          <div className="flex items-center">
-                            <Eye className="w-4 h-4 text-piba-gold mr-2" />
-                            <span>{item.views}</span>
-                          </div>
-                          <span className="text-gray-600">Views</span>
+
+                        <div className="flex items-center">
+                          <Eye className="w-4 h-4 text-piba-gold mr-1" />
+                          <span>{item.views}</span>
                         </div>
                       </div>
+
                       {item.duration && (
-                        <div className="flex items-center space-x-3">
+                        <div className="flex items-center space-x-3 mt-3">
                           <VideoIcon className="w-4 h-4 text-piba-gold mr-2" />
-                          <span className="font-semibold">{item.duration}</span>
-                          <span className="text-gray-600">Duration</span>
+                          <span className="font-semibold">
+                            {item.duration}
+                          </span>
+                          <span className="text-gray-600">
+                            Duration
+                          </span>
                         </div>
                       )}
-                    </div>
-                    <div className="flex space-x-2">
-                      <Button variant="outline" size="sm">
-                        <Heart className="w-4 h-3 mr-1" />
-                      </Button>
-                      <Button variant="outline" size="sm">
-                        <Share2 className="w-4 h-3 mr-1" />
-                      </Button>
-                      <Button variant="luxury" size="sm">
-                        <Download className="w-4 h-3 mr-1" />
-                      </Button>
+
+                      <div className="flex space-x-2 mt-4">
+                        <Button variant="outline" size="sm">
+                          <Heart className="w-4 h-4" />
+                        </Button>
+
+                        <Button variant="outline" size="sm">
+                          <Share2 className="w-4 h-4" />
+                        </Button>
+
+                        <Button variant="luxury" size="sm">
+                          <Download className="w-4 h-4" />
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </div>

@@ -107,16 +107,12 @@ const Hero = () => {
         <div className="space-y-12">
           {/* Logo */}
           <motion.div
-            className="w-24 h-24 mb-8"
+            className="w-24 h- mb-1"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8 }}
           >
-            <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-2xl mb-8">
-              <div className="w-12 h-12 bg-accent-gold rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-xl">PIBA</span>
-              </div>
-            </div>
+           
           </motion.div>
 
           {/* Main Heading */}
