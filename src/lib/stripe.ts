@@ -1,7 +1,7 @@
 import Stripe from 'stripe'
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-06-20',
+  apiVersion: '2026-04-22.dahlia',
 })
 
 export const createPaymentIntent = async (amount: number, currency: string = 'usd') => {
@@ -39,9 +39,14 @@ export const createSubscription = async (priceId: string, customerId: string) =>
       expand: ['latest_invoice.payment_intent'],
     })
 
+    const latestInvoice = subscription.latest_invoice
+    const clientSecret = typeof latestInvoice === 'object' && latestInvoice !== null
+      ? (latestInvoice as any).payment_intent?.client_secret
+      : null
+
     return {
       subscriptionId: subscription.id,
-      clientSecret: subscription.latest_invoice?.payment_intent?.client_secret,
+      clientSecret,
     }
   } catch (error) {
     console.error('Stripe subscription creation error:', error)

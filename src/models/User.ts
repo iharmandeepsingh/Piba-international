@@ -90,11 +90,8 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-})
-
-userSchema.pre('save', function(next) {
-  this.updatedAt = new Date()
-  next()
+}, {
+  timestamps: true,
 })
 
 export const User = mongoose.models.User || mongoose.model('User', userSchema)

@@ -68,7 +68,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
     setMessage('')
 
     try {
-      const { error, paymentIntent } = await stripe.confirmPayment({
+      const { error } = await stripe.confirmPayment({
         elements,
         confirmParams: {
           return_url: `${window.location.origin}/payment/success`,
@@ -85,7 +85,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
 
       if (error) {
         setMessage(error.message || 'An unexpected error occurred.')
-      } else if (paymentIntent?.status === 'succeeded') {
+      } else {
         setMessage('Payment successful! Redirecting...')
         setTimeout(() => onSuccess(), 2000)
       }
@@ -236,14 +236,12 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
         <div className="luxury-card-enhanced p-4">
           <PaymentElement 
             options={{
-              appearance: {
-                theme: 'night',
-                variables: {
-                  colorBackground: '#1A1A1A',
-                  colorText: '#FFFFFF',
-                  colorDanger: '#EF4444',
-                  fontFamily: 'Inter, sans-serif',
-                  fontSize: '16px',
+              fields: {
+                billingDetails: {
+                  name: 'auto',
+                  email: 'auto',
+                  phone: 'auto',
+                  address: 'auto',
                 },
               },
             }}
@@ -327,7 +325,9 @@ const PaymentCheckout: React.FC = () => {
     try {
       const plan = PRICING_PLANS[selectedPlan]
       const { clientSecret } = await createPaymentIntent(plan.price)
-      setClientSecret(clientSecret)
+      if (clientSecret) {
+        setClientSecret(clientSecret)
+      }
     } catch (err) {
       setError('Failed to initialize payment. Please try again.')
     } finally {

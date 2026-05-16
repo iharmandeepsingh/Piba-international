@@ -181,26 +181,25 @@ const TestimonialsPartners = () => {
               <div className="flex mb-4">
                 {renderStars(testimonial.rating)}
               </div>
+              <blockquote className="italic text-gray-700 leading-relaxed">
+                "{testimonial.testimonial}"
+              </blockquote>
             </div>
+          </div>
             
-            <blockquote className="flex-1 italic text-gray-700 leading-relaxed">
-              "{testimonial.testimonial}"
-            </blockquote>
-            
-            <div className="mt-auto">
-              <div className="flex flex-wrap gap-2 mb-4">
-                {testimonial.achievements.map((achievement: string, index: number) => (
-                  <div key={index} className="flex items-center space-x-2 bg-piba-gold/10 text-piba-gold px-3 py-1 rounded-full text-xs">
-                    <Award className="w-3 h-3" />
-                    <span>{achievement}</span>
-                  </div>
-                ))}
-              </div>
+          <div className="mt-auto">
+            <div className="flex flex-wrap gap-2 mb-4">
+              {testimonial.achievements.map((achievement: string, index: number) => (
+                <div key={index} className="flex items-center space-x-2 bg-piba-gold/10 text-piba-gold px-3 py-1 rounded-full text-xs">
+                  <Award className="w-3 h-3" />
+                  <span>{achievement}</span>
+                </div>
+              ))}
             </div>
-          </CardContent>
+          </div>
+        </CardContent>
         </Card>
       </motion.div>
-    </motion.div>
   )
 
   const renderPartnerCard = (partner: any) => (
@@ -236,8 +235,9 @@ const TestimonialsPartners = () => {
                 </span>
               </div>
             </div>
+          </div>
             
-            <div className="flex items-center justify-between mt-6">
+          <div className="flex items-center justify-between mt-6">
               <Button variant="outline" className="flex items-center space-x-2">
                 <ExternalLink className="w-4 h-4" />
                 Visit Website
@@ -250,7 +250,6 @@ const TestimonialsPartners = () => {
           </CardContent>
         </Card>
       </motion.div>
-    </motion.div>
   )
 
   const renderContent = () => {
