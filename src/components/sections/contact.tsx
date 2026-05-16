@@ -25,8 +25,10 @@ import {
 } from '@/components/ui/card'
 
 import { Input } from '@/components/ui/input'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 const Contact = () => {
+  const { t } = useLanguage()
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -44,36 +46,32 @@ const Contact = () => {
   const contactMethods = [
     {
       id: 'email',
-      title: 'Email Support',
-      description:
-        'Get assistance from our support team via email',
+      title: t('contact.email.title'),
+      description: t('contact.email.description'),
       icon: Mail,
       contact: 'support@piba-international.com',
       action: 'mailto:support@piba-international.com'
     },
     {
       id: 'phone',
-      title: 'Phone Support',
-      description:
-        'Speak directly with our support team during business hours',
+      title: t('contact.phone.title'),
+      description: t('contact.phone.description'),
       icon: Phone,
       contact: '+1 (555) 123-4567',
       action: 'tel:+15551234567'
     },
     {
       id: 'whatsapp',
-      title: 'WhatsApp Support',
-      description:
-        'Quick assistance via WhatsApp messaging',
+      title: t('contact.whatsapp.title'),
+      description: t('contact.whatsapp.description'),
       icon: MessageSquare,
       contact: '+1 (555) 987-6543',
       action: 'https://wa.me/15559876543'
     },
     {
       id: 'office',
-      title: 'Head Office',
-      description:
-        'Visit our main office for in-person consultations',
+      title: t('contact.office.title'),
+      description: t('contact.office.description'),
       icon: MapPin,
       contact: '123 Beauty Avenue, New York, NY 10001',
       action:
@@ -150,12 +148,12 @@ const Contact = () => {
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-bold text-black">
-              Contact Us
+              {t('contact.title')}
             </h1>
 
             <Button variant="outline">
               <Globe className="w-4 h-4 mr-2" />
-              Global Network
+              {t('contact.globalNetwork')}
             </Button>
           </div>
         </div>
@@ -172,12 +170,11 @@ const Contact = () => {
             transition={{ duration: 0.8 }}
           >
             <h2 className="text-4xl md:text-5xl font-serif font-bold text-white mb-6">
-              Get in Touch with PIBA International
+              {t('contact.hero.title')}
             </h2>
 
             <p className="text-xl text-white/90 mb-8 max-w-3xl mx-auto">
-              We're here to help you succeed in your beauty
-              career journey
+              {t('contact.hero.subtitle')}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -187,7 +184,7 @@ const Contact = () => {
                 className="bg-white text-piba-gold border-piba-gold hover:bg-piba-gold hover:text-white"
               >
                 <Mail className="w-5 h-5 mr-2" />
-                Email Support
+                {t('contact.emailSupport')}
               </Button>
 
               <Button
@@ -196,7 +193,7 @@ const Contact = () => {
                 className="bg-white text-piba-gold border-piba-gold hover:bg-piba-gold hover:text-white"
               >
                 <Phone className="w-5 h-5 mr-2" />
-                Call Us
+                {t('contact.callUs')}
               </Button>
             </div>
           </motion.div>
@@ -232,28 +229,27 @@ const Contact = () => {
                     {method.contact}
                   </p>
 
-                  <Button
-                    variant="outline"
-                    asChild
-                    className="w-full"
+                  <a
+                    href={method.action}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center"
                   >
-                    <a
-                      href={method.action}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-center"
+                    <Button
+                      variant="outline"
+                      className="w-full"
                     >
                       <ExternalLink className="w-4 h-4 mr-2" />
 
                       {method.id === 'email'
-                        ? 'Send Email'
+                        ? t('contact.sendEmail')
                         : method.id === 'phone'
-                        ? 'Call Now'
+                        ? t('contact.callNow')
                         : method.id === 'whatsapp'
-                        ? 'WhatsApp'
-                        : 'Directions'}
-                    </a>
-                  </Button>
+                        ? t('contact.whatsapp')
+                        : t('contact.directions')}
+                    </Button>
+                  </a>
                 </CardContent>
               </Card>
             </motion.div>
@@ -266,7 +262,7 @@ const Contact = () => {
           <Card>
             <CardHeader>
               <CardTitle className="text-black">
-                Send us a Message
+                {t('contact.form.title')}
               </CardTitle>
             </CardHeader>
 
@@ -278,7 +274,7 @@ const Contact = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Full Name *
+                      {t('contact.form.name')}
                     </label>
 
                     <Input
@@ -289,14 +285,14 @@ const Contact = () => {
                           e.target.value
                         )
                       }
-                      placeholder="Enter your full name"
+                      placeholder={t('contact.form.name.placeholder')}
                       required
                     />
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Email Address *
+                      {t('contact.form.email')}
                     </label>
 
                     <Input
@@ -308,7 +304,7 @@ const Contact = () => {
                           e.target.value
                         )
                       }
-                      placeholder="your.email@example.com"
+                      placeholder={t('contact.form.email.placeholder')}
                       required
                     />
                   </div>
@@ -316,7 +312,7 @@ const Contact = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Phone Number
+                    {t('contact.form.phone')}
                   </label>
 
                   <Input
@@ -328,13 +324,13 @@ const Contact = () => {
                         e.target.value
                       )
                     }
-                    placeholder="+1 (555) 123-4567"
+                    placeholder={t('contact.form.phone.placeholder')}
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Inquiry Type
+                    {t('contact.form.inquiryType')}
                   </label>
 
                   <select
@@ -348,30 +344,30 @@ const Contact = () => {
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-piba-gold focus:border-piba-gold"
                   >
                     <option value="general">
-                      General Inquiry
+                      {t('contact.form.inquiry.general')}
                     </option>
 
                     <option value="certification">
-                      Certification Question
+                      {t('contact.form.inquiry.certification')}
                     </option>
 
                     <option value="partnership">
-                      Partnership Opportunity
+                      {t('contact.form.inquiry.partnership')}
                     </option>
 
                     <option value="technical">
-                      Technical Support
+                      {t('contact.form.inquiry.technical')}
                     </option>
 
                     <option value="feedback">
-                      Feedback & Suggestions
+                      {t('contact.form.inquiry.feedback')}
                     </option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Message *
+                    {t('contact.form.message')}
                   </label>
 
                   <textarea
@@ -383,7 +379,7 @@ const Contact = () => {
                       )
                     }
                     rows={6}
-                    placeholder="Tell us how we can help you..."
+                    placeholder={t('contact.form.message.placeholder')}
                     required
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-piba-gold focus:border-piba-gold"
                   />
@@ -407,8 +403,8 @@ const Contact = () => {
 
                       <span className="font-medium">
                         {submitStatus === 'success'
-                          ? "Your message has been sent successfully!"
-                          : 'There was an error sending your message.'}
+                          ? t('contact.form.success')
+                          : t('contact.form.error')}
                       </span>
                     </div>
                   </div>
@@ -423,12 +419,12 @@ const Contact = () => {
                   {isSubmitting ? (
                     <div className="flex items-center space-x-2">
                       <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-piba-gold border-t-transparent" />
-                      <span>Sending...</span>
+                      <span>{t('contact.form.sending')}</span>
                     </div>
                   ) : (
                     <>
                       <Send className="w-4 h-4 mr-2" />
-                      Send Message
+                      {t('contact.form.send')}
                     </>
                   )}
                 </Button>
@@ -440,7 +436,7 @@ const Contact = () => {
           <Card>
             <CardHeader>
               <CardTitle className="text-black">
-                Our Offices
+                {t('contact.offices.title')}
               </CardTitle>
             </CardHeader>
 
@@ -494,68 +490,63 @@ const Contact = () => {
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="text-center">
             <h2 className="text-2xl font-bold text-black mb-6">
-              Connect With Us
+              {t('contact.social.title')}
             </h2>
 
             <p className="text-gray-600 mb-8">
-              Follow us for updates, tips, and industry news
+              {t('contact.social.subtitle')}
             </p>
 
             <div className="flex flex-wrap justify-center gap-4">
-              <Button
-                variant="outline"
-                className="flex items-center space-x-2"
-                asChild
-              >
-                <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
+              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
+                <Button
+                  variant="outline"
+                  className="flex items-center space-x-2"
+                >
                   <Share2 className="w-5 h-5" />
                   <span>Facebook</span>
-                </a>
-              </Button>
+                </Button>
+              </a>
 
-              <Button
-                variant="outline"
-                className="flex items-center space-x-2"
-                asChild
-              >
-                <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">
+              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">
+                <Button
+                  variant="outline"
+                  className="flex items-center space-x-2"
+                >
                   <Share2 className="w-5 h-5" />
                   <span>Twitter</span>
-                </a>
-              </Button>
+                </Button>
+              </a>
 
-              <Button
-                variant="outline"
-                className="flex items-center space-x-2"
-                asChild
-              >
-                <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">
+                <Button
+                  variant="outline"
+                  className="flex items-center space-x-2"
+                >
                   <Share2 className="w-5 h-5" />
                   <span>Instagram</span>
-                </a>
-              </Button>
+                </Button>
+              </a>
 
-              <Button
-                variant="outline"
-                className="flex items-center space-x-2"
-                asChild
-              >
-                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
+              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
+                <Button
+                  variant="outline"
+                  className="flex items-center space-x-2"
+                >
                   <Share2 className="w-5 h-5" />
                   <span>LinkedIn</span>
-                </a>
-              </Button>
+                </Button>
+              </a>
 
-              <Button
-                variant="outline"
-                className="flex items-center space-x-2"
-                asChild
-              >
-                <a href="https://youtube.com" target="_blank" rel="noopener noreferrer">
+              <a href="https://youtube.com" target="_blank" rel="noopener noreferrer">
+                <Button
+                  variant="outline"
+                  className="flex items-center space-x-2"
+                >
                   <Share2 className="w-5 h-5" />
                   <span>YouTube</span>
-                </a>
-              </Button>
+                </Button>
+              </a>
             </div>
           </div>
         </div>

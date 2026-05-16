@@ -1,123 +1,193 @@
 'use client'
 
-import React, { useState } from 'react'
-import { motion } from 'framer-motion'
+import React, { useState, useEffect } from 'react'
+import { useSession, signOut } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 import { 
-  Users, 
-  Award, 
-  FileText, 
-  Calendar, 
-  CreditCard, 
-  X,
-  Settings, 
-  Bell, 
-  TrendingUp, 
-  Eye,
-  Download,
+  LayoutDashboard,
+  Users,
+  Award,
+  FileText,
+  Calendar,
+  CreditCard,
+  Settings,
+  Bell,
   Search,
-  Filter,
   Plus,
   Edit,
   Trash2,
   CheckCircle,
   XCircle,
-  AlertCircle,
-  BarChart3,
-  PieChart,
+  Eye,
+  TrendingUp,
   DollarSign,
-  UserCheck,
-  Mail,
-  Globe,
+  LogOut,
+  Shield,
   Menu,
-  LogOut
+  X,
+  Home,
+  BarChart3,
+  Package,
+  MessageSquare,
+  HelpCircle,
+  Filter
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 
 const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState('overview')
+  const { data: session, status } = useSession()
+  const router = useRouter()
+  const [activeTab, setActiveTab] = useState('dashboard')
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
 
-  const stats = [
-    { label: 'Total Users', value: '12,547', change: '+12.5%', icon: Users, color: 'from-blue-500 to-purple-600' },
-    { label: 'Active Certifications', value: '3,892', change: '+8.2%', icon: Award, color: 'from-green-500 to-teal-600' },
-    { label: 'Total Revenue', value: '$124,750', change: '+23.1%', icon: DollarSign, color: 'from-piba-gold to-piba-gold-dark' },
-    { label: 'Pending Applications', value: '486', change: '-5.4%', icon: FileText, color: 'from-orange-500 to-red-600' }
-  ]
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/admin/login')
+    } else if (status === 'authenticated' && session?.user?.role !== 'admin') {
+      router.push('/')
+    }
+  }, [status, session, router])
 
-  const recentActivity = [
-    { id: 1, user: 'Sarah Johnson', action: 'Applied for Makeup Certification', time: '2 hours ago', status: 'pending' },
-    { id: 2, user: 'Michael Chen', action: 'Certificate Verified', time: '3 hours ago', status: 'completed' },
-    { id: 3, user: 'Emma Wilson', action: 'New Member Registration', time: '5 hours ago', status: 'completed' },
-    { id: 4, user: 'David Brown', action: 'Payment Received', time: '6 hours ago', status: 'completed' }
-  ]
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 border-t-transparent mx-auto mb-4"></div>
+          <p className="text-gray-400">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!session || session.user?.role !== 'admin') {
+    return null
+  }
 
   const sidebarItems = [
-    { id: 'overview', label: 'Dashboard', icon: BarChart3 },
-    { id: 'users', label: 'Users Management', icon: Users },
+    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'users', label: 'Users', icon: Users },
     { id: 'certifications', label: 'Certifications', icon: Award },
     { id: 'applications', label: 'Applications', icon: FileText },
     { id: 'events', label: 'Events', icon: Calendar },
     { id: 'payments', label: 'Payments', icon: CreditCard },
-    { id: 'analytics', label: 'Analytics', icon: TrendingUp },
-    { id: 'settings', label: 'Settings', icon: Settings }
+    { id: 'products', label: 'Products', icon: Package },
+    { id: 'messages', label: 'Messages', icon: MessageSquare },
+    { id: 'analytics', label: 'Analytics', icon: BarChart3 },
+    { id: 'settings', label: 'Settings', icon: Settings },
+  ]
+
+  const quickStats = [
+    { label: 'Total Users', value: '12,547', change: '+12%', icon: Users, color: 'text-blue-500', bgColor: 'bg-blue-500/10' },
+    { label: 'Active Certifications', value: '3,892', change: '+8%', icon: Award, color: 'text-green-500', bgColor: 'bg-green-500/10' },
+    { label: 'Revenue', value: '$124,750', change: '+23%', icon: DollarSign, color: 'text-purple-500', bgColor: 'bg-purple-500/10' },
+    { label: 'Pending', value: '486', change: '-5%', icon: FileText, color: 'text-orange-500', bgColor: 'bg-orange-500/10' },
+  ]
+
+  const recentActivity = [
+    { id: 1, user: 'Sarah Johnson', action: 'Applied for Makeup Certification', time: '2h ago', type: 'certification' },
+    { id: 2, user: 'Michael Chen', action: 'Certificate verified', time: '3h ago', type: 'success' },
+    { id: 3, user: 'Emma Wilson', action: 'New member registered', time: '5h ago', type: 'user' },
+    { id: 4, user: 'David Brown', action: 'Payment received', time: '6h ago', type: 'payment' },
+    { id: 5, user: 'Lisa Garcia', action: 'Event registration', time: '8h ago', type: 'event' },
   ]
 
   const renderContent = () => {
     switch (activeTab) {
-      case 'overview':
+      case 'dashboard':
         return (
           <div className="space-y-6">
-            {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              {stats.map((stat, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                >
-                  <Card className="luxury-card-enhanced text-center">
-                    <CardContent className="p-6">
-                      <div className={`inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r ${stat.color} rounded-full mb-4`}>
-                        <stat.icon className="w-6 h-6 text-white" />
+            {/* Quick Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {quickStats.map((stat, index) => (
+                <Card key={index} className="border-slate-800 bg-slate-900/50 hover:bg-slate-900/80 transition-all">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div className={`p-3 rounded-lg ${stat.bgColor}`}>
+                        <stat.icon className={`w-6 h-6 ${stat.color}`} />
                       </div>
-                      <div className="text-2xl font-bold text-piba-black mb-1">{stat.value}</div>
-                      <div className="text-sm text-white mb-2">{stat.label}</div>
-                      <div className={`text-sm font-medium ${
-                        stat.change.startsWith('+') ? 'text-green-600' : 'text-red-600'
-                      }`}>
-                        {stat.change}
+                      <div className="text-right">
+                        <p className="text-2xl font-bold text-white">{stat.value}</p>
+                        <p className={`text-sm ${stat.change.startsWith('+') ? 'text-green-400' : 'text-red-400'}`}>
+                          {stat.change}
+                        </p>
                       </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
+                    </div>
+                    <p className="text-sm text-gray-400 mt-2">{stat.label}</p>
+                  </CardContent>
+                </Card>
               ))}
             </div>
 
-            {/* Recent Activity */}
-            <Card>
+            {/* Charts and Activity */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card className="border-slate-800 bg-slate-900/50">
+                <CardHeader>
+                  <CardTitle className="text-white">Revenue Overview</CardTitle>
+                  <CardDescription className="text-gray-400">Monthly revenue trends</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-64 flex items-center justify-center text-gray-500">
+                    <TrendingUp className="w-16 h-16 mb-2" />
+                    <p className="text-sm">Chart visualization coming soon</p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="border-slate-800 bg-slate-900/50">
+                <CardHeader>
+                  <CardTitle className="text-white">Recent Activity</CardTitle>
+                  <CardDescription className="text-gray-400">Latest system events</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {recentActivity.map((activity) => (
+                      <div key={activity.id} className="flex items-center space-x-3 p-3 rounded-lg bg-slate-800/50 hover:bg-slate-800 transition-colors">
+                        <div className={`w-2 h-2 rounded-full ${
+                          activity.type === 'success' ? 'bg-green-500' :
+                          activity.type === 'certification' ? 'bg-blue-500' :
+                          activity.type === 'payment' ? 'bg-purple-500' :
+                          activity.type === 'event' ? 'bg-orange-500' :
+                          'bg-gray-500'
+                        }`} />
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-white">{activity.user}</p>
+                          <p className="text-xs text-gray-400">{activity.action}</p>
+                        </div>
+                        <span className="text-xs text-gray-500">{activity.time}</span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Quick Actions */}
+            <Card className="border-slate-800 bg-slate-900/50">
               <CardHeader>
-                <CardTitle>Recent Activity</CardTitle>
+                <CardTitle className="text-white">Quick Actions</CardTitle>
+                <CardDescription className="text-gray-400">Frequently used operations</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {recentActivity.map((activity) => (
-                    <div key={activity.id} className="flex items-center justify-between p-4 border-b border-gray-100">
-                      <div className="flex items-center space-x-3">
-                        <div className={`w-2 h-2 rounded-full ${
-                          activity.status === 'completed' ? 'bg-green-500' :
-                          activity.status === 'pending' ? 'bg-yellow-500' : 'bg-gray-400'
-                        }`} />
-                        <div>
-                          <p className="font-medium text-piba-black">{activity.user}</p>
-                          <p className="text-sm text-white">{activity.action}</p>
-                        </div>
-                      </div>
-                      <div className="text-sm text-gray-500">{activity.time}</div>
-                    </div>
-                  ))}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <Button className="bg-blue-600 hover:bg-blue-700 h-24 flex flex-col items-center justify-center space-y-2">
+                    <Plus className="w-6 h-6" />
+                    <span className="text-sm">Add User</span>
+                  </Button>
+                  <Button className="bg-green-600 hover:bg-green-700 h-24 flex flex-col items-center justify-center space-y-2">
+                    <Award className="w-6 h-6" />
+                    <span className="text-sm">Issue Certificate</span>
+                  </Button>
+                  <Button className="bg-purple-600 hover:bg-purple-700 h-24 flex flex-col items-center justify-center space-y-2">
+                    <Calendar className="w-6 h-6" />
+                    <span className="text-sm">Create Event</span>
+                  </Button>
+                  <Button className="bg-orange-600 hover:bg-orange-700 h-24 flex flex-col items-center justify-center space-y-2">
+                    <FileText className="w-6 h-6" />
+                    <span className="text-sm">View Reports</span>
+                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -127,54 +197,87 @@ const AdminDashboard = () => {
       case 'users':
         return (
           <div className="space-y-6">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-piba-black">Users Management</h2>
-              <Button variant="luxury">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+              <div>
+                <h2 className="text-2xl font-bold text-white">Users Management</h2>
+                <p className="text-gray-400">Manage all platform users</p>
+              </div>
+              <Button className="bg-blue-600 hover:bg-blue-700">
                 <Plus className="w-4 h-4 mr-2" />
-                Add New User
+                Add User
               </Button>
             </div>
-            
-            <Card>
+
+            <Card className="border-slate-800 bg-slate-900/50">
               <CardContent className="p-6">
                 <div className="flex items-center space-x-4 mb-6">
-                  <Input placeholder="Search users..." className="flex-1" />
-                  <Button variant="outline">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500" />
+                    <Input
+                      placeholder="Search users..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-10 bg-slate-800 border-slate-700 text-white placeholder:text-gray-500"
+                    />
+                  </div>
+                  <Button variant="outline" className="border-slate-700 text-white hover:bg-slate-800">
                     <Filter className="w-4 h-4 mr-2" />
                     Filter
                   </Button>
                 </div>
-                
+
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead>
-                      <tr className="border-b border-gray-200">
-                        <th className="text-left p-3 font-semibold text-piba-black">Name</th>
-                        <th className="text-left p-3 font-semibold text-piba-black">Email</th>
-                        <th className="text-left p-3 font-semibold text-piba-black">Role</th>
-                        <th className="text-left p-3 font-semibold text-piba-black">Status</th>
-                        <th className="text-left p-3 font-semibold text-piba-black">Actions</th>
+                      <tr className="border-b border-slate-700">
+                        <th className="text-left p-4 font-semibold text-gray-300">User</th>
+                        <th className="text-left p-4 font-semibold text-gray-300">Email</th>
+                        <th className="text-left p-4 font-semibold text-gray-300">Role</th>
+                        <th className="text-left p-4 font-semibold text-gray-300">Status</th>
+                        <th className="text-left p-4 font-semibold text-gray-300">Joined</th>
+                        <th className="text-left p-4 font-semibold text-gray-300">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr className="border-b border-gray-100 hover:bg-gray-50">
-                        <td className="p-3">Sarah Johnson</td>
-                        <td className="p-3">sarah.johnson@email.com</td>
-                        <td className="p-3">Professional Member</td>
-                        <td className="p-3">
-                          <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">Active</span>
-                        </td>
-                        <td className="p-3">
-                          <div className="flex space-x-2">
-                            <Button variant="outline" size="sm">
-                              <Edit className="w-3 h-3" />
-                            </Button>
-                            <Button variant="outline" size="sm">
-                              <Trash2 className="w-3 h-3" />
-                            </Button>
-                          </div>
-                        </td>
-                      </tr>
+                      {[
+                        { name: 'Sarah Johnson', email: 'sarah@example.com', role: 'Professional Member', status: 'Active', joined: '2024-01-15' },
+                        { name: 'Michael Chen', email: 'michael@example.com', role: 'Student', status: 'Active', joined: '2024-02-20' },
+                        { name: 'Emma Wilson', email: 'emma@example.com', role: 'Professional Member', status: 'Inactive', joined: '2024-03-10' },
+                      ].map((user, index) => (
+                        <tr key={index} className="border-b border-slate-800 hover:bg-slate-800/50 transition-colors">
+                          <td className="p-4">
+                            <div className="flex items-center space-x-3">
+                              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold">
+                                {user.name.charAt(0)}
+                              </div>
+                              <span className="text-white font-medium">{user.name}</span>
+                            </div>
+                          </td>
+                          <td className="p-4 text-gray-400">{user.email}</td>
+                          <td className="p-4 text-gray-400">{user.role}</td>
+                          <td className="p-4">
+                            <span className={`px-2 py-1 rounded-full text-xs ${
+                              user.status === 'Active' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
+                            }`}>
+                              {user.status}
+                            </span>
+                          </td>
+                          <td className="p-4 text-gray-400">{user.joined}</td>
+                          <td className="p-4">
+                            <div className="flex space-x-2">
+                              <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white hover:bg-slate-800">
+                                <Eye className="w-4 h-4" />
+                              </Button>
+                              <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white hover:bg-slate-800">
+                                <Edit className="w-4 h-4" />
+                              </Button>
+                              <Button variant="ghost" size="sm" className="text-gray-400 hover:text-red-400 hover:bg-slate-800">
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </div>
@@ -186,202 +289,65 @@ const AdminDashboard = () => {
       case 'certifications':
         return (
           <div className="space-y-6">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-piba-black">Certifications</h2>
-              <Button variant="luxury">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+              <div>
+                <h2 className="text-2xl font-bold text-white">Certifications</h2>
+                <p className="text-gray-400">Manage professional certifications</p>
+              </div>
+              <Button className="bg-green-600 hover:bg-green-700">
                 <Plus className="w-4 h-4 mr-2" />
                 Issue Certificate
               </Button>
             </div>
-            
-            <Card>
+
+            <Card className="border-slate-800 bg-slate-900/50">
               <CardContent className="p-6">
-                <div className="flex items-center space-x-4 mb-6">
-                  <Input placeholder="Search certifications..." className="flex-1" />
-                  <Button variant="outline">
-                    <Filter className="w-4 h-4 mr-2" />
-                    Filter
-                  </Button>
-                </div>
-                
-                <div className="grid gap-6">
-                  <div className="border border-gray-200 rounded-lg p-4">
-                    <div className="flex justify-between items-start mb-4">
-                      <div>
-                        <h3 className="font-semibold text-piba-black">PIBA-2024-001</h3>
-                        <p className="text-sm text-white">Professional Makeup Artistry</p>
-                        <p className="text-sm text-white">Sarah Johnson</p>
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {[
+                    { id: 'PIBA-2024-001', name: 'Professional Makeup Artistry', holder: 'Sarah Johnson', status: 'Active', issued: '2024-01-15' },
+                    { id: 'PIBA-2024-002', name: 'Advanced Hairstyling', holder: 'Michael Chen', status: 'Active', issued: '2024-02-20' },
+                    { id: 'PIBA-2024-003', name: 'Skincare Specialist', holder: 'Emma Wilson', status: 'Expired', issued: '2023-11-10' },
+                  ].map((cert, index) => (
+                    <div key={index} className="p-4 rounded-lg border border-slate-700 bg-slate-800/50 hover:bg-slate-800 transition-colors">
+                      <div className="flex justify-between items-start mb-3">
+                        <Award className={`w-8 h-8 ${cert.status === 'Active' ? 'text-green-500' : 'text-red-500'}`} />
+                        <span className={`px-2 py-1 rounded-full text-xs ${
+                          cert.status === 'Active' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
+                        }`}>
+                          {cert.status}
+                        </span>
                       </div>
-                      <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">Active</span>
+                      <h3 className="font-semibold text-white mb-1">{cert.name}</h3>
+                      <p className="text-sm text-gray-400 mb-1">ID: {cert.id}</p>
+                      <p className="text-sm text-gray-400 mb-3">Holder: {cert.holder}</p>
+                      <div className="flex justify-between items-center pt-3 border-t border-slate-700">
+                        <span className="text-xs text-gray-500">Issued: {cert.issued}</span>
+                        <div className="flex space-x-2">
+                          <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">
+                            <Eye className="w-4 h-4" />
+                          </Button>
+                          <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  ))}
                 </div>
               </CardContent>
             </Card>
-          </div>
-        )
-
-      case 'applications':
-        return (
-          <div className="space-y-6">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-piba-black">Applications</h2>
-              <div className="flex space-x-2">
-                <Button variant="outline">Pending</Button>
-                <Button variant="outline">Approved</Button>
-                <Button variant="outline">Rejected</Button>
-              </div>
-            </div>
-            
-            <Card>
-              <CardContent className="p-6">
-                <div className="space-y-4">
-                  <div className="border border-gray-200 rounded-lg p-4">
-                    <div className="flex justify-between items-start mb-4">
-                      <div>
-                        <h3 className="font-semibold text-piba-black">APP-2024-1234</h3>
-                        <p className="text-sm text-white">Makeup Artistry Certification</p>
-                        <p className="text-sm text-white">Michael Chen</p>
-                      </div>
-                      <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">Pending Review</span>
-                    </div>
-                    <div className="flex justify-end space-x-2">
-                      <Button variant="outline" size="sm">
-                        <Eye className="w-3 h-3 mr-1" />
-                        View
-                      </Button>
-                      <Button variant="luxury" size="sm">
-                        <CheckCircle className="w-3 h-3 mr-1" />
-                        Approve
-                      </Button>
-                      <Button variant="outline" size="sm">
-                        <XCircle className="w-3 h-3 mr-1" />
-                        Reject
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )
-
-      case 'payments':
-        return (
-          <div className="space-y-6">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-piba-black">Payment Management</h2>
-              <Button variant="luxury">
-                <Download className="w-4 h-4 mr-2" />
-                Export Reports
-              </Button>
-            </div>
-            
-            <div className="grid md:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Revenue Overview</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex justify-between">
-                      <span className="text-white">This Month</span>
-                      <span className="font-bold text-piba-black">$24,750</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-white">Last Month</span>
-                      <span className="font-bold text-piba-black">$18,320</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-white">Total</span>
-                      <span className="font-bold text-piba-black">$124,750</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardHeader>
-                  <CardTitle>Recent Transactions</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center p-3 border-b border-gray-100">
-                      <div>
-                        <p className="font-medium">Sarah Johnson</p>
-                        <p className="text-sm text-white">Professional Membership</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-bold text-piba-black">$299.00</p>
-                        <p className="text-sm text-green-600">Completed</p>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        )
-
-      case 'analytics':
-        return (
-          <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-piba-black mb-6">Analytics Overview</h2>
-            
-            <div className="grid md:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>User Growth</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex justify-between">
-                      <span className="text-white">New Users</span>
-                      <span className="font-bold text-piba-black">1,247</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-white">Active Users</span>
-                      <span className="font-bold text-piba-black">12,547</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-white">Retention Rate</span>
-                      <span className="font-bold text-piba-black">87.3%</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardHeader>
-                  <CardTitle>Certification Stats</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex justify-between">
-                      <span className="text-white">Total Issued</span>
-                      <span className="font-bold text-piba-black">3,892</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-white">This Month</span>
-                      <span className="font-bold text-piba-black">342</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-white">Success Rate</span>
-                      <span className="font-bold text-piba-black">94.2%</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
           </div>
         )
 
       default:
         return (
-          <div className="text-center py-12">
-            <div className="text-gray-500">
-              <Settings className="w-12 h-12 mx-auto mb-4" />
-              <p>This section is coming soon</p>
+          <div className="flex flex-col items-center justify-center py-20">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mb-4">
+                <HelpCircle className="w-8 h-8 text-gray-500" />
+              </div>
+              <h3 className="text-xl font-semibold text-white mb-2">Coming Soon</h3>
+              <p className="text-gray-400">This section is under development</p>
             </div>
           </div>
         )
@@ -389,35 +355,67 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary-bg via-secondary-bg to-primary-bg">
-      {/* Mobile Menu Button */}
-      <div className="lg:hidden fixed top-4 left-4 z-50">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-        >
-          {sidebarOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
-        </Button>
-      </div>
+    <div className="min-h-screen bg-slate-950">
+      {/* Top Navigation Bar */}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-lg border-b border-slate-800">
+        <div className="flex items-center justify-between px-4 lg:px-6 h-16">
+          <div className="flex items-center space-x-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="lg:hidden text-gray-400 hover:text-white"
+            >
+              {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </Button>
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+                <Shield className="w-5 h-5 text-white" />
+              </div>
+              <span className="font-bold text-white hidden sm:block">PIBA Admin</span>
+            </div>
+          </div>
 
-      <div className="flex">
+          <div className="flex items-center space-x-4">
+            <div className="relative hidden md:block">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500" />
+              <Input
+                placeholder="Search..."
+                className="pl-10 w-64 bg-slate-800 border-slate-700 text-white placeholder:text-gray-500"
+              />
+            </div>
+            <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white relative">
+              <Bell className="w-5 h-5" />
+              <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+            </Button>
+            <div className="flex items-center space-x-3 pl-4 border-l border-slate-700">
+              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white text-sm font-semibold">
+                {session?.user?.name?.charAt(0) || 'A'}
+              </div>
+              <div className="hidden sm:block">
+                <p className="text-sm font-medium text-white">{session?.user?.name || 'Admin'}</p>
+                <p className="text-xs text-gray-400">Administrator</p>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => signOut({ callbackUrl: '/admin/login' })}
+                className="text-gray-400 hover:text-red-400"
+              >
+                <LogOut className="w-5 h-5" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div className="flex pt-16">
         {/* Sidebar */}
-        <aside className={`fixed lg:static inset-y-0 left-0 z-40 w-64 luxury-card-enhanced shadow-xl transform transition-transform duration-300 lg:translate-x-0 ${
+        <aside className={`fixed lg:static inset-y-0 left-0 z-40 w-64 bg-slate-900 border-r border-slate-800 transform transition-transform duration-300 lg:translate-x-0 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}>
-          <div className="p-6">
-            <div className="flex items-center space-x-3 mb-8">
-              <div className="w-10 h-10 gold-gradient rounded-full flex items-center justify-center">
-                <Settings className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-piba-black">Admin Panel</h3>
-                <p className="text-sm text-white">PIBA International</p>
-              </div>
-            </div>
-            
-            <nav className="space-y-2">
+          <div className="p-4">
+            <nav className="space-y-1">
               {sidebarItems.map((item) => (
                 <button
                   key={item.id}
@@ -425,22 +423,26 @@ const AdminDashboard = () => {
                     setActiveTab(item.id)
                     setSidebarOpen(false)
                   }}
-                  className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors duration-200 ${
+                  className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 ${
                     activeTab === item.id
-                      ? 'bg-piba-gold text-white'
-                      : 'hover:bg-gray-100 text-gray-700'
+                      ? 'bg-blue-600 text-white'
+                      : 'text-gray-400 hover:bg-slate-800 hover:text-white'
                   }`}
                 >
                   <item.icon className="w-5 h-5" />
-                  <span>{item.label}</span>
+                  <span className="font-medium">{item.label}</span>
                 </button>
               ))}
             </nav>
-            
-            <div className="mt-8 pt-8 border-t border-gray-200">
-              <Button variant="outline" className="w-full">
-                <LogOut className="w-4 h-4 mr-2" />
-                Logout
+
+            <div className="mt-8 pt-8 border-t border-slate-800">
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-gray-400 hover:text-white hover:bg-slate-800"
+                onClick={() => router.push('/')}
+              >
+                <Home className="w-5 h-5 mr-3" />
+                Back to Site
               </Button>
             </div>
           </div>
@@ -449,34 +451,18 @@ const AdminDashboard = () => {
         {/* Main Content */}
         <main className="flex-1 lg:ml-64">
           <div className="p-6 lg:p-8">
-            {/* Header */}
-            <div className="flex justify-between items-center mb-8">
-              <h1 className="text-3xl font-bold text-piba-black">
-                {sidebarItems.find(item => item.id === activeTab)?.label}
-              </h1>
-              <div className="flex items-center space-x-2">
-                <Button variant="outline">
-                  <Bell className="w-4 h-4 mr-2" />
-                  Notifications
-                </Button>
-                <Button variant="outline">
-                  <Settings className="w-4 h-4 mr-2" />
-                  Settings
-                </Button>
-              </div>
-            </div>
-
-            {/* Content */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              {renderContent()}
-            </motion.div>
+            {renderContent()}
           </div>
         </main>
       </div>
+
+      {/* Mobile Sidebar Overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-30 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
     </div>
   )
 }

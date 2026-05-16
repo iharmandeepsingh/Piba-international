@@ -14,6 +14,21 @@ const Hero = () => {
     500
   )
 
+  const [particles, setParticles] = useState<Array<{ id: number; left: number; top: number; duration: number; delay: number }>>([])
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+    const newParticles = Array.from({ length: 20 }, (_, i) => ({
+      id: i,
+      left: Math.random() * 100,
+      top: Math.random() * 100,
+      duration: Math.random() * 10 + 10,
+      delay: Math.random() * 5,
+    }))
+    setParticles(newParticles)
+  }, [])
+
   
   const stats = [
     { 
@@ -70,28 +85,28 @@ const Hero = () => {
 
       {/* Animated Particles */}
       <div className="absolute inset-0 overflow-hidden">
-        {[...Array(20)].map((_, i) => (
+        {isMounted && particles.map((particle) => (
           <motion.div
-            key={i}
+            key={particle.id}
             className="absolute w-2 h-2 bg-accent-gold/30 rounded-full"
             initial={{
-              x: Math.random() * 100,
-              y: Math.random() * 100,
+              x: particle.left,
+              y: particle.top,
               opacity: 0,
             }}
             animate={{
-              x: [Math.random() * 100, Math.random() * 100],
-              y: [Math.random() * 100, Math.random() * 100],
+              x: [particle.left, particle.left + (Math.random() - 0.5) * 20],
+              y: [particle.top, particle.top + (Math.random() - 0.5) * 20],
               opacity: [0, 1, 0],
             }}
             transition={{
-              duration: Math.random() * 10 + 10,
+              duration: particle.duration,
               repeat: Infinity,
-              delay: Math.random() * 5,
+              delay: particle.delay,
             }}
             style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
+              left: `${particle.left}%`,
+              top: `${particle.top}%`,
             }}
           />
         ))}

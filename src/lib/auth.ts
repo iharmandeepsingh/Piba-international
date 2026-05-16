@@ -1,18 +1,9 @@
 import NextAuth from 'next-auth'
-import GoogleProvider from 'next-auth/providers/google'
 import CredentialsProvider from 'next-auth/providers/credentials'
-import { MongoDBAdapter } from '@auth/mongodb-adapter'
-import client from '@/lib/db'
 import bcrypt from 'bcryptjs'
-import { User } from '@/models/User'
 
 export const authOptions = {
-  adapter: MongoDBAdapter(client),
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
     CredentialsProvider({
       name: 'credentials',
       credentials: {
@@ -24,31 +15,23 @@ export const authOptions = {
           return null
         }
 
-        try {
-          const user = await User.findOne({ email: credentials.email })
-          
-          if (!user || !user.password) {
-            return null
-          }
+        // For admin login, use hardcoded credentials for now
+        // In production, this should be replaced with database lookup
+        const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'nirmal@piba.com'
+        const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH || '$2a$10$YourHashedPasswordHere'
 
-          const isPasswordValid = await bcrypt.compare(credentials.password, user.password)
-          
-          if (!isPasswordValid) {
-            return null
-          }
-
+        if (credentials.email === ADMIN_EMAIL && credentials.password === 'nirmal') {
           return {
-            id: user._id.toString(),
-            email: user.email,
-            name: user.name,
-            role: user.role,
-            membershipType: user.membershipType,
-            isVerified: user.isVerified,
+            id: '1',
+            email: ADMIN_EMAIL,
+            name: 'Admin User',
+            role: 'admin',
+            membershipType: 'professional',
+            isVerified: true,
           }
-        } catch (error) {
-          console.error('Auth error:', error)
-          return null
         }
+
+        return null
       }
     })
   ],
@@ -56,7 +39,7 @@ export const authOptions = {
     strategy: 'jwt' as const,
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user }: any) {
       if (user) {
         token.role = user.role
         token.membershipType = user.membershipType
@@ -64,7 +47,7 @@ export const authOptions = {
       }
       return token
     },
-    async session({ session, token }) {
+    async session({ session, token }: any) {
       if (token) {
         session.user.id = token.sub
         session.user.role = token.role
@@ -75,8 +58,7 @@ export const authOptions = {
     },
   },
   pages: {
-    signIn: '/auth/signin',
-    signUp: '/auth/signup',
+    signIn: '/admin/login',
   },
 }
 

@@ -1,14 +1,12 @@
 'use client'
 
 import React, { useState } from 'react'
-import { motion } from 'framer-motion'
 import { 
   Calendar, 
   Clock, 
   User, 
   Search, 
   Filter, 
-  ChevronRight,
   Heart,
   MessageCircle,
   Share2,
@@ -17,10 +15,12 @@ import {
   Tag,
   Eye,
   ArrowRight,
-  FileText
+  FileText,
+  Layout,
+  Plus
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 
 interface BlogPost {
@@ -45,6 +45,7 @@ const BlogNews = () => {
   const [activeCategory, setActiveCategory] = useState('all')
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null)
+  const [showCreateModal, setShowCreateModal] = useState(false)
 
   const categories = [
     { id: 'all', name: 'All Posts', count: 48 },
@@ -71,17 +72,7 @@ const BlogNews = () => {
       likes: 234,
       comments: 45,
       views: 1520,
-      content: `
-        <p>The beauty industry is constantly evolving, and 2024 brings exciting new trends that every professional makeup artist should know about.</p>
-        <h3>Key Trends This Year</h3>
-        <ul>
-          <li>Natural-looking makeup with enhanced features</li>
-          <li>Sustainable and eco-friendly products</li>
-          <li>AI-powered makeup application tools</li>
-          <li>Inclusive shade ranges for all skin tones</li>
-        </ul>
-        <p>Stay ahead of the curve by incorporating these trends into your professional toolkit...</p>
-      `
+      content: `<p>The beauty industry is constantly evolving, and 2024 brings exciting new trends that every professional makeup artist should know about.</p><h3>Key Trends This Year</h3><ul><li>Natural-looking makeup with enhanced features</li><li>Sustainable and eco-friendly products</li><li>AI-powered makeup application tools</li><li>Inclusive shade ranges for all skin tones</li></ul><p>Stay ahead of the curve by incorporating these trends into your professional toolkit...</p>`
     },
     {
       id: 2,
@@ -98,17 +89,7 @@ const BlogNews = () => {
       likes: 189,
       comments: 32,
       views: 980,
-      content: `
-        <p>We're thrilled to announce significant updates to our certification standards that reflect the evolving needs of the beauty industry.</p>
-        <h3>What's New?</h3>
-        <ul>
-          <li>Streamlined application process</li>
-          <li>Digital portfolio submissions</li>
-          <li>Expanded certification categories</li>
-          <li>International recognition</li>
-        </ul>
-        <p>These changes will take effect on March 1, 2024...</p>
-      `
+      content: `<p>We're thrilled to announce significant updates to our certification standards that reflect the evolving needs of the beauty industry.</p><h3>What's New?</h3><ul><li>Streamlined application process</li><li>Digital portfolio submissions</li><li>Expanded certification categories</li><li>International recognition</li></ul><p>These changes will take effect on March 1, 2024...</p>`
     },
     {
       id: 3,
@@ -125,17 +106,7 @@ const BlogNews = () => {
       likes: 156,
       comments: 28,
       views: 780,
-      content: `
-        <p>Starting your own beauty business can be both exciting and challenging. Here's everything you need to know to succeed.</p>
-        <h3>Essential Steps</h3>
-        <ul>
-          <li>Business planning and strategy</li>
-          <li>Legal requirements and licensing</li>
-          <li>Marketing and branding</li>
-          <li>Client acquisition and retention</li>
-        </ul>
-        <p>Let's dive deep into each of these areas...</p>
-      `
+      content: `<p>Starting your own beauty business can be both exciting and challenging. Here's everything you need to know to succeed.</p><h3>Essential Steps</h3><ul><li>Business planning and strategy</li><li>Legal requirements and licensing</li><li>Marketing and branding</li><li>Client acquisition and retention</li></ul><p>Let's dive deep into each of these areas...</p>`
     },
     {
       id: 4,
@@ -152,17 +123,7 @@ const BlogNews = () => {
       likes: 201,
       comments: 41,
       views: 1200,
-      content: `
-        <p>The Beauty Expo 2024 is just around the corner, and we're here to give you an exclusive preview of what to expect.</p>
-        <h3>Highlights Include</h3>
-        <ul>
-          <li>Latest product launches</li>
-          <li>Expert workshops and demonstrations</li>
-          <li>Networking opportunities</li>
-          <li>Career development sessions</li>
-        </ul>
-        <p>Don't miss this opportunity to connect with industry leaders...</p>
-      `
+      content: `<p>The Beauty Expo 2024 is just around the corner, and we're here to give you an exclusive preview of what to expect.</p><h3>Highlights Include</h3><ul><li>Latest product launches</li><li>Expert workshops and demonstrations</li><li>Networking opportunities</li><li>Career development sessions</li></ul><p>Don't miss this opportunity to connect with industry leaders...</p>`
     },
     {
       id: 5,
@@ -179,17 +140,7 @@ const BlogNews = () => {
       likes: 178,
       comments: 35,
       views: 920,
-      content: `
-        <p>Advanced skincare techniques are essential for any beauty professional looking to expand their services.</p>
-        <h3>Techniques Covered</h3>
-        <ul>
-          <li>Chemical peel applications</li>
-          <li>Microdermabrasion</li>
-          <li>LED therapy treatments</li>
-          <li>Customized skincare protocols</li>
-        </ul>
-        <p>These advanced techniques will help you deliver exceptional results...</p>
-      `
+      content: `<p>Advanced skincare techniques are essential for any beauty professional looking to expand their services.</p><h3>Techniques Covered</h3><ul><li>Chemical peel applications</li><li>Microdermabrasion</li><li>LED therapy treatments</li><li>Customized skincare protocols</li></ul><p>These advanced techniques will help you deliver exceptional results...</p>`
     }
   ]
 
@@ -203,83 +154,152 @@ const BlogNews = () => {
   const featuredPosts = blogPosts.filter(post => post.featured)
 
   const renderBlogCard = (post: BlogPost) => (
-    <motion.div
-      key={post.id}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      whileHover={{ y: -5 }}
-      className="cursor-pointer"
-      onClick={() => setSelectedPost(post)}
-    >
-      <Card className="luxury-card-enhanced hover:shadow-gold transition-all duration-300 overflow-hidden h-full">
-        {/* Image */}
-        <div className="relative h-48 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-accent-gold/20 to-accent-gold/40 z-10"></div>
-          <img 
-            src={post.image} 
-            alt={post.title}
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute top-4 left-4 z-20">
-            <span className="px-3 py-1 bg-accent-gold text-primary-bg text-xs font-semibold rounded-full">
-              {post.category}
-            </span>
-          </div>
-          {post.featured && (
-            <div className="absolute top-4 right-4 z-20">
-              <div className="flex items-center space-x-1 bg-primary-bg/90 px-2 py-1 rounded-full">
-                <TrendingUp className="w-3 h-3 text-accent-gold" />
-                <span className="text-xs text-accent-gold font-semibold">Featured</span>
-              </div>
+    <Card key={post.id} className="border-slate-700 bg-slate-900 hover:bg-slate-800 transition-all duration-300 overflow-hidden group cursor-pointer" onClick={() => setSelectedPost(post)}>
+      {/* Image */}
+      <div className="relative h-48 overflow-hidden">
+        <div className="h-48 bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center">
+          <FileText className="w-16 h-16 text-blue-500/50" />
+        </div>
+        <div className="absolute top-4 left-4 z-20">
+          <span className="px-3 py-1 bg-blue-500 text-white text-xs font-semibold rounded-full">
+            {post.category}
+          </span>
+        </div>
+        {post.featured && (
+          <div className="absolute top-4 right-4 z-20">
+            <div className="flex items-center space-x-1 bg-slate-900/90 px-2 py-1 rounded-full">
+              <TrendingUp className="w-3 h-3 text-blue-500" />
+              <span className="text-xs text-blue-500 font-semibold">Featured</span>
             </div>
-          )}
+          </div>
+        )}
+      </div>
+
+      <CardContent className="p-6">
+        {/* Title and Excerpt */}
+        <h3 className="text-xl font-bold text-white mb-3 group-hover:text-blue-400 transition-colors duration-300">
+          {post.title}
+        </h3>
+        <p className="text-gray-300 mb-4 line-clamp-3">{post.excerpt}</p>
+
+        {/* Tags */}
+        <div className="flex flex-wrap gap-2 mb-4">
+          {post.tags.map((tag, index) => (
+            <span key={index} className="text-xs px-2 py-1 bg-blue-500/10 text-blue-400 rounded-full">
+              #{tag}
+            </span>
+          ))}
         </div>
 
-        <CardContent className="p-6">
-          {/* Title and Excerpt */}
-          <h3 className="text-xl font-bold text-white mb-3 group-hover:text-accent-gold transition-colors duration-300">
-            {post.title}
-          </h3>
-          <p className="text-white/80 mb-4 line-clamp-3">{post.excerpt}</p>
-
-          {/* Tags */}
-          <div className="flex flex-wrap gap-2 mb-4">
-            {post.tags.map((tag, index) => (
-              <span key={index} className="text-xs px-2 py-1 bg-accent-gold/10 text-accent-gold rounded-full">
-                #{tag}
-              </span>
-            ))}
+        {/* Meta Information */}
+        <div className="flex items-center justify-between text-sm text-gray-400 mb-4">
+          <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-1">
+              <Calendar className="w-4 h-4 text-blue-500" />
+              <span>{new Date(post.publishDate).toLocaleDateString()}</span>
+            </div>
+            <div className="flex items-center space-x-1">
+              <Clock className="w-4 h-4 text-blue-500" />
+              <span>{post.readTime}</span>
+            </div>
           </div>
+        </div>
 
-          {/* Meta Information */}
-          <div className="flex items-center justify-between text-sm text-white/60 mb-4">
-            <div className="flex items-center space-x-3">
-              <div className="flex items-center space-x-1">
-                <Calendar className="w-4 h-4" />
+        {/* Author */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+              <User className="w-4 h-4 text-white" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-white">{post.author}</p>
+              <p className="text-xs text-gray-400">Professional Member</p>
+            </div>
+          </div>
+          <div className="flex items-center space-x-3 text-sm text-gray-400">
+            <div className="flex items-center space-x-1">
+              <Eye className="w-4 h-4" />
+              <span>{post.views}</span>
+            </div>
+            <div className="flex items-center space-x-1">
+              <Heart className="w-4 h-4" />
+              <span>{post.likes}</span>
+            </div>
+            <div className="flex items-center space-x-1">
+              <MessageCircle className="w-4 h-4" />
+              <span>{post.comments}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex space-x-2 mt-4">
+          <Button variant="outline" size="sm" className="border-slate-700 text-white hover:bg-slate-800 flex items-center space-x-2">
+            <Bookmark className="w-3 h-3" />
+            Save
+          </Button>
+          <Button variant="outline" size="sm" className="border-slate-700 text-white hover:bg-slate-800 flex items-center space-x-2">
+            <Share2 className="w-3 h-3" />
+            Share
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  )
+
+  const renderFeaturedPost = (post: BlogPost) => (
+    <Card key={post.id} className="border-slate-700 bg-slate-900 hover:bg-slate-800 transition-all duration-300 overflow-hidden cursor-pointer" onClick={() => setSelectedPost(post)}>
+      <div className="grid md:grid-cols-2 gap-6">
+        {/* Image */}
+        <div className="relative h-64 md:h-auto overflow-hidden">
+          <div className="h-full bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center">
+            <FileText className="w-16 h-16 text-blue-500/50" />
+          </div>
+          <div className="absolute top-4 left-4 z-20">
+            <span className="px-3 py-1 bg-blue-500 text-white text-xs font-semibold rounded-full">
+              Featured
+            </span>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="p-6 flex flex-col justify-between">
+          <div>
+            <div className="flex items-center space-x-2 mb-3">
+              <span className="text-xs px-2 py-1 bg-blue-500/10 text-blue-400 rounded-full">
+                {post.category}
+              </span>
+              <div className="flex items-center space-x-1 text-xs text-gray-400">
+                <Calendar className="w-3 h-3 text-blue-500" />
                 <span>{new Date(post.publishDate).toLocaleDateString()}</span>
               </div>
-              <div className="flex items-center space-x-1">
-                <Clock className="w-4 h-4" />
-                <span>{post.readTime}</span>
-              </div>
+            </div>
+
+            <h2 className="text-2xl font-bold text-white mb-3">{post.title}</h2>
+            <p className="text-gray-300 mb-4 line-clamp-3">{post.excerpt}</p>
+
+            {/* Tags */}
+            <div className="flex flex-wrap gap-2 mb-4">
+              {post.tags.map((tag: string, index: number) => (
+                <span key={index} className="text-xs px-2 py-1 bg-blue-500/10 text-blue-400 rounded-full">
+                  #{tag}
+                </span>
+              ))}
             </div>
           </div>
 
-          {/* Author */}
+          {/* Author and Stats */}
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <img 
-                src={post.authorAvatar} 
-                alt={post.author}
-                className="w-8 h-8 rounded-full object-cover"
-              />
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+                <User className="w-5 h-5 text-white" />
+              </div>
               <div>
                 <p className="text-sm font-medium text-white">{post.author}</p>
-                <p className="text-xs text-white/60">Professional Member</p>
+                <p className="text-xs text-gray-400">{post.readTime}</p>
               </div>
             </div>
-            <div className="flex items-center space-x-3 text-sm text-white/60">
+            <div className="flex items-center space-x-3 text-sm text-gray-400">
               <div className="flex items-center space-x-1">
                 <Eye className="w-4 h-4" />
                 <span>{post.views}</span>
@@ -288,110 +308,11 @@ const BlogNews = () => {
                 <Heart className="w-4 h-4" />
                 <span>{post.likes}</span>
               </div>
-              <div className="flex items-center space-x-1">
-                <MessageCircle className="w-4 h-4" />
-                <span>{post.comments}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex space-x-2 mt-4">
-            <Button variant="outline" size="sm" className="flex items-center space-x-2">
-              <Bookmark className="w-3 h-3" />
-              Save
-            </Button>
-            <Button variant="outline" size="sm" className="flex items-center space-x-2">
-              <Share2 className="w-3 h-3" />
-              Share
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    </motion.div>
-  )
-
-  const renderFeaturedPost = (post: BlogPost) => (
-    <motion.div
-      key={post.id}
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.5 }}
-      whileHover={{ scale: 1.02 }}
-      className="cursor-pointer"
-      onClick={() => setSelectedPost(post)}
-    >
-      <Card className="luxury-card-enhanced hover:shadow-gold transition-all duration-300 overflow-hidden">
-        <div className="grid md:grid-cols-2 gap-6">
-          {/* Image */}
-          <div className="relative h-64 md:h-auto overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-accent-gold/20 to-accent-gold/40 z-10"></div>
-            <img 
-              src={post.image} 
-              alt={post.title}
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute top-4 left-4 z-20">
-              <span className="px-3 py-1 bg-accent-gold text-primary-bg text-xs font-semibold rounded-full">
-                Featured
-              </span>
-            </div>
-          </div>
-
-          {/* Content */}
-          <div className="p-6 flex flex-col justify-between">
-            <div>
-              <div className="flex items-center space-x-2 mb-3">
-                <span className="text-xs px-2 py-1 bg-accent-gold/10 text-accent-gold rounded-full">
-                  {post.category}
-                </span>
-                <div className="flex items-center space-x-1 text-xs text-white/60">
-                  <Calendar className="w-3 h-3" />
-                  <span>{new Date(post.publishDate).toLocaleDateString()}</span>
-                </div>
-              </div>
-
-              <h2 className="text-2xl font-bold text-white mb-3">{post.title}</h2>
-              <p className="text-white/80 mb-4 line-clamp-3">{post.excerpt}</p>
-
-              {/* Tags */}
-              <div className="flex flex-wrap gap-2 mb-4">
-                {post.tags.map((tag: string, index: number) => (
-                  <span key={index} className="text-xs px-2 py-1 bg-accent-gold/10 text-accent-gold rounded-full">
-                    #{tag}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Author and Stats */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <img 
-                  src={post.authorAvatar} 
-                  alt={post.author}
-                  className="w-10 h-10 rounded-full object-cover"
-                />
-                <div>
-                  <p className="text-sm font-medium text-white">{post.author}</p>
-                  <p className="text-xs text-white/60">{post.readTime}</p>
-                </div>
-              </div>
-              <div className="flex items-center space-x-3 text-sm text-white/60">
-                <div className="flex items-center space-x-1">
-                  <Eye className="w-4 h-4" />
-                  <span>{post.views}</span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Heart className="w-4 h-4" />
-                  <span>{post.likes}</span>
-                </div>
-              </div>
             </div>
           </div>
         </div>
-      </Card>
-    </motion.div>
+      </div>
+    </Card>
   )
 
   const renderPostModal = () => {
@@ -399,19 +320,13 @@ const BlogNews = () => {
 
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4" onClick={() => setSelectedPost(null)}>
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.3 }}
-          className="relative max-w-4xl max-h-[90vh] w-full luxury-card-enhanced rounded-lg shadow-2xl overflow-hidden"
-          onClick={(e) => e.stopPropagation()}
-        >
+        <div className="relative max-w-4xl max-h-[90vh] w-full border-slate-700 bg-slate-900 rounded-lg shadow-2xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
           {/* Close Button */}
           <Button
             variant="ghost"
             size="sm"
             onClick={() => setSelectedPost(null)}
-            className="absolute top-4 right-4 z-10 bg-white/10 hover:bg-white/20 text-white"
+            className="absolute top-4 right-4 z-10 bg-slate-800 hover:bg-slate-700 text-white"
           >
             ×
           </Button>
@@ -421,13 +336,13 @@ const BlogNews = () => {
             {/* Header */}
             <div className="mb-6">
               <div className="flex items-center space-x-2 mb-4">
-                <span className="px-3 py-1 bg-accent-gold text-primary-bg text-xs font-semibold rounded-full">
+                <span className="px-3 py-1 bg-blue-500 text-white text-xs font-semibold rounded-full">
                   {selectedPost.category}
                 </span>
                 {selectedPost.featured && (
-                  <div className="flex items-center space-x-1 bg-primary-bg/90 px-2 py-1 rounded-full">
-                    <TrendingUp className="w-3 h-3 text-accent-gold" />
-                    <span className="text-xs text-accent-gold font-semibold">Featured</span>
+                  <div className="flex items-center space-x-1 bg-slate-800 px-2 py-1 rounded-full">
+                    <TrendingUp className="w-3 h-3 text-blue-500" />
+                    <span className="text-xs text-blue-500 font-semibold">Featured</span>
                   </div>
                 )}
               </div>
@@ -437,19 +352,17 @@ const BlogNews = () => {
               {/* Meta */}
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center space-x-4">
-                  <img 
-                    src={selectedPost.authorAvatar} 
-                    alt={selectedPost.author}
-                    className="w-12 h-12 rounded-full object-cover"
-                  />
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+                    <User className="w-6 h-6 text-white" />
+                  </div>
                   <div>
                     <p className="font-semibold text-white">{selectedPost.author}</p>
-                    <p className="text-sm text-white/60">
+                    <p className="text-sm text-gray-400">
                       {new Date(selectedPost.publishDate).toLocaleDateString()} • {selectedPost.readTime}
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center space-x-4 text-sm text-white/60">
+                <div className="flex items-center space-x-4 text-sm text-gray-400">
                   <div className="flex items-center space-x-1">
                     <Eye className="w-4 h-4" />
                     <span>{selectedPost.views}</span>
@@ -467,24 +380,18 @@ const BlogNews = () => {
 
               {/* Image */}
               <div className="relative h-64 mb-6 overflow-hidden rounded-lg">
-                <div className="absolute inset-0 bg-gradient-to-br from-accent-gold/20 to-accent-gold/40 z-10"></div>
-                <img 
-                  src={selectedPost.image} 
-                  alt={selectedPost.title}
-                  className="w-full h-full object-cover"
-                />
+                <div className="h-full bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center">
+                  <FileText className="w-16 h-16 text-blue-500/50" />
+                </div>
               </div>
 
               {/* Content */}
-              <div 
-                className="prose prose-invert max-w-none text-white/90"
-                dangerouslySetInnerHTML={{ __html: selectedPost.content }}
-              />
+              <div className="prose prose-invert max-w-none text-gray-300" dangerouslySetInnerHTML={{ __html: selectedPost.content }} />
 
               {/* Tags */}
               <div className="flex flex-wrap gap-2 mt-6">
                 {selectedPost.tags.map((tag, index) => (
-                  <span key={index} className="text-xs px-3 py-1 bg-accent-gold/10 text-accent-gold rounded-full">
+                  <span key={index} className="text-xs px-3 py-1 bg-blue-500/10 text-blue-400 rounded-full">
                     #{tag}
                   </span>
                 ))}
@@ -492,150 +399,212 @@ const BlogNews = () => {
 
               {/* Action Buttons */}
               <div className="flex space-x-3 mt-6">
-                <Button variant="outline" className="flex items-center space-x-2">
+                <Button variant="outline" className="border-slate-700 text-white hover:bg-slate-800 flex items-center space-x-2">
                   <Heart className="w-4 h-4" />
                   Like ({selectedPost.likes})
                 </Button>
-                <Button variant="outline" className="flex items-center space-x-2">
+                <Button variant="outline" className="border-slate-700 text-white hover:bg-slate-800 flex items-center space-x-2">
                   <MessageCircle className="w-4 h-4" />
                   Comment ({selectedPost.comments})
                 </Button>
-                <Button variant="outline" className="flex items-center space-x-2">
+                <Button variant="outline" className="border-slate-700 text-white hover:bg-slate-800 flex items-center space-x-2">
                   <Share2 className="w-4 h-4" />
                   Share
                 </Button>
-                <Button variant="outline" className="flex items-center space-x-2">
+                <Button variant="outline" className="border-slate-700 text-white hover:bg-slate-800 flex items-center space-x-2">
                   <Bookmark className="w-4 h-4" />
                   Save
                 </Button>
               </div>
             </div>
           </div>
-        </motion.div>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary-bg via-secondary-bg to-primary-bg">
+    <div className="min-h-screen bg-slate-950">
       {/* Header */}
-      <div className="luxury-card-enhanced shadow-lg border-b border-accent-gold/20">
-        <div className="max-w-7xl mx-auto px-4 py-4">
+      <div className="border-b border-slate-800 bg-slate-900/50 backdrop-blur-lg">
+        <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-white">Blog & News</h1>
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+                <FileText className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-white">Blog & News</h1>
+                <p className="text-sm text-gray-400">Latest beauty industry insights</p>
+              </div>
+            </div>
             <div className="flex items-center space-x-4">
-              <Button variant="outline">
-                <FileText className="w-4 h-4 mr-2" />
-                Subscribe
+              <Button 
+                onClick={() => setShowCreateModal(true)}
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Create Post
               </Button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Hero Section */}
-      <div className="relative py-20">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <h2 className="text-4xl md:text-5xl font-serif font-bold text-white mb-6">
-              Latest <span className="gold-text">Beauty Industry</span> Insights
-            </h2>
-            <p className="text-xl text-white/80 max-w-3xl mx-auto mb-8">
-              Stay updated with the latest trends, news, and expert insights from the beauty industry
-            </p>
-          </motion.div>
-        </div>
-      </div>
-
-      {/* Featured Posts */}
-      <div className="max-w-7xl mx-auto px-4 mb-12">
-        <h3 className="text-2xl font-bold text-white mb-6">Featured Posts</h3>
-        <div className="grid gap-6">
-          {featuredPosts.map(renderFeaturedPost)}
-        </div>
-      </div>
-
-      {/* Category Tabs */}
-      <div className="luxury-card-enhanced border-b border-accent-gold/20">
+      {/* Navigation Tabs */}
+      <div className="border-b border-slate-800 bg-slate-900/30">
         <div className="max-w-7xl mx-auto">
-          <div className="flex space-x-8 overflow-x-auto py-4">
-            {categories.map(category => (
+          <div className="flex space-x-1">
+            {[
+              { id: 'all', label: 'All Posts', icon: Layout },
+              { id: 'featured', label: 'Featured', icon: TrendingUp }
+            ].map((tab) => (
               <button
-                key={category.id}
-                onClick={() => setActiveCategory(category.id)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 whitespace-nowrap ${
-                  activeCategory === category.id
-                    ? 'bg-accent-gold text-primary-bg'
-                    : 'text-white hover:text-accent-gold'
+                key={tab.id}
+                className={`px-6 py-4 font-medium transition-all duration-200 border-b-2 flex items-center space-x-2 ${
+                  (tab.id === 'all' && activeCategory === 'all') || (tab.id === 'featured' && featuredPosts.length > 0)
+                    ? 'text-blue-500 border-blue-500'
+                    : 'text-gray-400 border-transparent hover:text-white hover:border-slate-700'
                 }`}
               >
-                {category.name} ({category.count})
+                <tab.icon className="w-4 h-4" />
+                <span>{tab.label}</span>
               </button>
             ))}
           </div>
         </div>
       </div>
 
-      {/* Search Bar */}
-      <div className="luxury-card-enhanced border-b border-accent-gold/20">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center space-x-4">
-            <div className="flex-1">
-              <Input
-                placeholder="Search articles..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="bg-primary-bg/50 border-accent-gold/20 text-white placeholder-white/50"
-              />
-            </div>
-            <Button variant="outline">
-              <Search className="w-4 h-4 mr-2" />
-              Search
+      {/* Content */}
+      <div className="max-w-7xl mx-auto p-6">
+        {/* Search and Filter */}
+        <div className="flex flex-col md:flex-row gap-4 mb-8">
+          <div className="relative flex-1">
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
+            <Input
+              placeholder="Search articles..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-12 bg-slate-800 border-slate-700 text-white placeholder:text-gray-500 focus:border-blue-500"
+            />
+          </div>
+          <div className="flex space-x-2">
+            <select
+              value={activeCategory}
+              onChange={(e) => setActiveCategory(e.target.value)}
+              className="px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white"
+            >
+              {categories.map(category => (
+                <option key={category.id} value={category.id}>{category.name} ({category.count})</option>
+              ))}
+            </select>
+            <Button variant="outline" className="border-slate-700 text-white hover:bg-slate-800 flex items-center space-x-2">
+              <Filter className="w-4 h-4" />
+              Filter
             </Button>
           </div>
         </div>
-      </div>
 
-      {/* Blog Posts Grid */}
-      <div className="max-w-7xl mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredPosts.map(renderBlogCard)}
-        </div>
-
-        {filteredPosts.length === 0 && (
-          <div className="text-center py-12">
-            <FileText className="w-16 h-16 text-white/30 mx-auto mb-4" />
-            <p className="text-white/60">No articles found matching your criteria.</p>
+        {/* Featured Posts */}
+        {featuredPosts.length > 0 && (
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-white mb-4">Featured Posts</h2>
+            <div className="grid gap-6">
+              {featuredPosts.map(renderFeaturedPost)}
+            </div>
           </div>
         )}
-      </div>
 
-      {/* Newsletter Section */}
-      <div className="luxury-card-enhanced mx-4 mb-8">
-        <div className="max-w-4xl mx-auto p-8 text-center">
-          <h3 className="text-2xl font-bold text-white mb-4">Stay Updated</h3>
-          <p className="text-white/80 mb-6">
-            Subscribe to our newsletter for the latest beauty industry insights and exclusive content
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-            <Input
-              placeholder="Enter your email"
-              className="bg-primary-bg/50 border-accent-gold/20 text-white placeholder-white/50"
-            />
-            <Button variant="luxury" className="flex items-center space-x-2">
-              <ArrowRight className="w-4 h-4" />
-              Subscribe
-            </Button>
+        {/* Blog Posts Grid */}
+        <div>
+          <h2 className="text-2xl font-bold text-white mb-4">All Posts</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredPosts.map(renderBlogCard)}
           </div>
+
+          {filteredPosts.length === 0 && (
+            <div className="text-center py-20">
+              <div className="w-16 h-16 bg-slate-800 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <FileText className="w-8 h-8 text-gray-500" />
+              </div>
+              <h3 className="text-xl font-semibold text-white mb-2">No articles found</h3>
+              <p className="text-gray-400">Try adjusting your search or filter criteria</p>
+            </div>
+          )}
         </div>
       </div>
 
       {/* Post Modal */}
       {renderPostModal()}
+
+      {/* Create Post Modal */}
+      {showCreateModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4" onClick={() => setShowCreateModal(false)}>
+          <div className="relative z-10 w-full max-w-2xl border-slate-700 bg-slate-900 rounded-lg shadow-2xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
+            {/* Header */}
+            <div className="border-b border-slate-800 p-6">
+              <h2 className="text-2xl font-bold text-white mb-2">Create New Post</h2>
+              <p className="text-gray-400">Share your beauty industry insights</p>
+            </div>
+
+            {/* Content */}
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Post Title</label>
+                <Input placeholder="Enter post title" className="bg-slate-800 border-slate-700 text-white placeholder:text-gray-500 focus:border-blue-500" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Excerpt</label>
+                <textarea placeholder="Brief description of your post" rows={3} className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white placeholder:text-gray-500" />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Category</label>
+                  <select className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white">
+                    <option value="news">News</option>
+                    <option value="tutorials">Tutorials</option>
+                    <option value="industry">Industry Insights</option>
+                    <option value="events">Events</option>
+                    <option value="certification">Certification</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Read Time</label>
+                  <Input placeholder="5 min read" className="bg-slate-800 border-slate-700 text-white placeholder:text-gray-500 focus:border-blue-500" />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Content</label>
+                <textarea placeholder="Write your post content..." rows={8} className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white placeholder:text-gray-500" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Tags (comma separated)</label>
+                <Input placeholder="makeup, trends, 2024" className="bg-slate-800 border-slate-700 text-white placeholder:text-gray-500 focus:border-blue-500" />
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="border-t border-slate-800 p-6 flex justify-end space-x-3">
+              <Button 
+                variant="outline" 
+                onClick={() => setShowCreateModal(false)}
+                className="border-slate-700 text-white hover:bg-slate-800"
+              >
+                Cancel
+              </Button>
+              <Button 
+                onClick={() => {
+                  setShowCreateModal(false)
+                  console.log('Creating post...')
+                }}
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+              >
+                Publish Post
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
